@@ -1,0 +1,25 @@
+
+# Created by https://www.toptal.com/developers/gitignore/api/vs,clojure
+# Edit at https://www.toptal.com/developers/gitignore?templates=vs,clojure
+
+### Calva ###
+.calva/
+
+### Clojure ###
+pom.xml
+pom.xml.asc
+*.jar
+*.class
+/lib/
+/classes/
+/target/
+/checkouts/
+.lein-deps-sum
+.lein-repl-history
+.lein-plugins/
+.lein-failures
+.nrepl-port
+.cpcache/
+
+### vscode ###
+.vscode/
