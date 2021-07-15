@@ -1,4 +1,4 @@
-(ns user-2
+(ns user
   (:require [clojure.repl]))
 
 ;; let bindings

@@ -1,12 +1,17 @@
 ;;Write your own version of filter.
-(def numbers [1 -2 7 3 -4])
 
+;Returns sequence of item in the collection for which (f item) returns true
+;if collection is empty it returns empty list
 (defn my-filter
   [f coll]
-  (when (first coll)
+  (if (first coll)
     (if (f (first coll))
       (cons (first coll)
             (my-filter f (rest coll)))
-      (my-filter f (rest coll)))))
+      (my-filter f (rest coll)))
+    (list)))
 
-(my-filter pos? numbers)
+;Test Cases
+(my-filter pos? [1 -2 7 3 -4])
+(my-filter pos? [1 -2 7 3 -4])
+(my-filter pos? [])

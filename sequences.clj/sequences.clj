@@ -156,17 +156,17 @@
 (reduce conj [] [1 2 3 4 5])
 
 (defn my-map [f coll]
-  (reduce (fn [output element]
+  (->> coll
+       (reduce (fn [output element]
             (conj output (f element)))
-          []
-          coll))
+          [])))
 (my-map inc [1 2 3 4])
 
 (defn my-take-while [f coll]
-  (reduce (fn [out elem]
-            (if (f elem)
+  (reduce (->> (if (f elem)
               (conj out elem)
-              (reduced out)))
+              (reduced out))
+               (fn [out elem]))
           []
           coll))
 (my-take-while pos? [2 1 0 -1 0 1 2])
@@ -178,18 +178,22 @@
 
 ;;putting it all together
 (partition 2 1
-           (filter odd?
-                   (iterate inc 0)))
-(map (fn [pair]
-       (* (first pair) (second pair)))
-     (partition 2 1
-                (filter odd?
-                        (iterate inc 0))))
+           (->> 0
+                (iterate inc)
+                (filter odd?)))
+(->> 0
+     (iterate inc)
+     (filter odd?)
+     (partition 2 1)
+     (map (fn [pair]
+       (* (first pair) (second pair)))))
 
 (reduce +
         (take 10
-        (map (fn [pair]
-               (* (first pair) (second pair)))
+        (map (->> pair
+                  second
+                  (* (first pair))
+                  (fn [pair]))
              (partition 2 1
                         (filter odd?
                                 (iterate inc 0))))))
