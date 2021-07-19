@@ -23,8 +23,9 @@
     :else tree))
 
 ;; test case
-(def tree (reduce insert-node {} '(5 3 2 4 1)))
+(reduce insert-node {} '(5 3 2 4 1))
 
+(def tree (reduce insert-node {} '(3 2 5 4 1)))
 
 (defn has?
   "Returns true if if a given integer is present in the tree else false"
@@ -37,3 +38,4 @@
 
 ;; test case
 (has? tree 0)
+(has? tree 3)
