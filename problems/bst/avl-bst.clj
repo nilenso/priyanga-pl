@@ -24,3 +24,16 @@
 
 ;; test case
 (def tree (reduce insert-node {} '(5 3 2 4 1)))
+
+
+(defn has?
+  "Returns true if if a given integer is present in the tree else false"
+  [{:keys [root left right]} value]
+  (cond
+    (nil? root) false
+    (= value root) true
+    (< value root) (has? left value)
+    :else (has? right value)))
+
+;; test case
+(has? tree 0)
