@@ -15,15 +15,15 @@
 
 (defn insert-node
   "Returns a bst after inserting a new node"
-  [{:keys [root left right] :as tree} value]
+  [{:keys [root] :as tree} value]
   (cond
-    (nil? root) (into {} {:root value :left nil :right nil})
-    (< value root) (merge tree {:left (insert-node left value)})
-    (> value root) (merge tree {:right (insert-node right value)})
+    (nil? root) {:root value :left nil :right nil}
+    (< value root) (update tree :left insert-node value)
+    (> value root) (update tree :right insert-node value)
     :else tree))
 
 ;; test case
-(reduce insert-node {} '(5 3 2 4 1))
+(reduce insert-node {} '(3 2 5 4 1))
 
 (def tree (reduce insert-node {} '(3 2 5 4 1)))
 
