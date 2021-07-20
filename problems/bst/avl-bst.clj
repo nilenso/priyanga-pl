@@ -36,5 +36,31 @@
     (< value root) (has? left value)
     :else (has? right value)))
 
+(defn min-node
+  "Find the minimun value in a given tree"
+  [{:keys [root left] :as tree}]
+  (cond
+    (nil? tree) nil
+    (nil? left) root
+    :else (min-node left)))
+
+(defn remove-node
+  "Returns a tree after removing the given node from the given tree"
+  [{:keys [root left right] :as tree} value]
+  (cond
+    (nil? tree) nil
+    (< value root) (update tree :left remove-node value)
+    (> value root) (update tree :right remove-node value)
+    (nil? left) right
+    (nil? right) left
+    :else (let [min (min-node right)]
+            (-> (update tree :right remove-node min)
+                (assoc :root min)))))
+
 ;; test case
 (create-bst '(9 2 1 5 7 4 6 8 10))
+(def tree (create-bst '(9 2 1 5 7 4 6 8 10)))
+(has? tree 0)
+(has? tree 3)
+(min-node tree)
+(remove-node tree 5)
