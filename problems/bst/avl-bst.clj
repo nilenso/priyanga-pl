@@ -22,10 +22,10 @@
     (> value root) (update tree :right insert-node value)
     :else tree))
 
-;; test case
-(reduce insert-node {} '(3 2 5 4 1))
-
-(def tree (reduce insert-node {} '(3 2 5 4 1)))
+(defn create-bst
+  "Returns a bst when given a list of node values "
+  [values]
+  (reduce insert-node {} values))
 
 (defn has?
   "Returns true if if a given integer is present in the tree else false"
@@ -37,5 +37,4 @@
     :else (has? right value)))
 
 ;; test case
-(has? tree 0)
-(has? tree 3)
+(create-bst '(9 2 1 5 7 4 6 8 10))
