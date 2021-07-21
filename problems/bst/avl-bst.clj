@@ -12,6 +12,14 @@
 ;; - The tree must be self balancing
 ;; - Use your tree to find the count of the words in a huge text file
 
+;;             5                          5
+;;            / \                        / \
+;;           3   nil                    3   nil
+;;          /                          / \ 
+;;         2                         nil  4
+;;        /                              / \
+;;       nil                            nil nil
+
 
 (defn insert-node
   "Returns a bst after inserting a new node"
@@ -57,10 +65,22 @@
             (-> (update tree :right remove-node min)
                 (assoc :root min)))))
 
+(defn height
+  ([tree] (height tree 0))
+  ([tree count]
+   (if tree
+     (max (height (:left tree) (inc count))
+          (height (:right tree) (inc count)))
+     count)))
+
+(defn factor [{:keys [left right]}]
+  (- (height left) (height right)))
+
 ;; test case
-(create-bst '(9 2 1 5 7 4 6 8 10))
-(def tree (create-bst '(9 2 1 5 7 4 6 8 10)))
+(def tree (create-bst '(9 2 1 5 7 3 4 6 8 10)))
 (has? tree 0)
 (has? tree 3)
 (min-node tree)
 (remove-node tree 5)
+(height tree)
+(factor tree)
