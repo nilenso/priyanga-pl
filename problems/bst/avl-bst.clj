@@ -66,6 +66,7 @@
                 (assoc :root min)))))
 
 (defn height
+  "Returns height of the given tree"
   ([tree] (height tree 0))
   ([tree count]
    (if tree
@@ -73,25 +74,39 @@
           (height (:right tree) (inc count)))
      count)))
 
-(defn factor [{:keys [left right]}]
+(defn factor 
+  "Returns the balance factor of root node of the given tree"
+  [{:keys [left right]}]
   (- (height left) (height right)))
 
-(defn is-left-case? [tree]
+(defn is-left-case? 
+  "Returns true if left subtree is imbalanced else false"
+  [tree]
   (> (factor tree) 1))
 
-(defn is-right-case? [tree]
+(defn is-right-case? 
+  "Returns true if right sub tree is imbalanced else false"
+  [tree]
   (< (factor tree) -1))
 
-(defn is-left-right-case? [tree]
+(defn is-left-right-case?
+  "Returns true if right sub tree of left child is imbalanced else false"
+  [tree]
   (and (is-left-case? tree) (< (factor (:left tree)) 0)))
 
-(defn is-left-left-case? [tree]
+(defn is-left-left-case? 
+  "Returns true if left sub tree of left child is imbalanced else false"
+  [tree]
   (and (is-left-case? tree) (> (factor (:left tree)) 0)))
 
-(defn is-right-right-case? [tree]
+(defn is-right-right-case? 
+  "Returns true if right sub tree of right child is imbalanced else false"
+  [tree]
   (and (is-right-case? tree) (< (factor (:right tree)) 0)))
 
-(defn is-right-left-case? [tree]
+(defn is-right-left-case? 
+  "Returns true if right sub tree of left child is imbalanced else false"
+  [tree]
   (and (is-right-case? tree) (> (factor (:right tree)) 0)))
 
 ;; test case
@@ -111,3 +126,4 @@
 (is-right-case? (create-bst '(2 6 4 3 1 7)))
 (is-right-left-case? (create-bst '(2 6 4 3 1 7)))
 (is-right-right-case? (create-bst '(3 4 5)))
+
