@@ -76,11 +76,38 @@
 (defn factor [{:keys [left right]}]
   (- (height left) (height right)))
 
+(defn is-left-case? [tree]
+  (> (factor tree) 1))
+
+(defn is-right-case? [tree]
+  (< (factor tree) -1))
+
+(defn is-left-right-case? [tree]
+  (and (is-left-case? tree) (< (factor (:left tree)) 0)))
+
+(defn is-left-left-case? [tree]
+  (and (is-left-case? tree) (> (factor (:left tree)) 0)))
+
+(defn is-right-right-case? [tree]
+  (and (is-right-case? tree) (< (factor (:right tree)) 0)))
+
+(defn is-right-left-case? [tree]
+  (and (is-right-case? tree) (> (factor (:right tree)) 0)))
+
 ;; test case
-(def tree (create-bst '(9 2 1 5 7 3 4 6 8 10)))
+(def tree (create-bst '( 9 2 1 5 7 3 4 6 8 10)))
+(prn tree)
 (has? tree 0)
 (has? tree 3)
 (min-node tree)
 (remove-node tree 5)
 (height tree)
 (factor tree)
+
+(is-left-case? tree)
+(is-left-right-case? tree)
+(is-left-left-case? (create-bst '(9 7 5 3 4 2 1 6 8 10)))
+
+(is-right-case? (create-bst '(2 6 4 3 1 7)))
+(is-right-left-case? (create-bst '(2 6 4 3 1 7)))
+(is-right-right-case? (create-bst '(3 4 5)))
