@@ -109,6 +109,22 @@
   [tree]
   (and (is-right-case? tree) (> (factor (:right tree)) 0)))
 
+(defn rotate-left
+  "Returns the left rotated tree "
+  [{:keys [right] :as tree}]
+  (let [pivot right, left-pivot (assoc tree :right (:left right))]
+    (-> (assoc tree :root (:root pivot))
+        (assoc :left left-pivot)
+        (assoc :right (:right pivot)))))
+
+(defn rotate-right
+  "Returns the right rotated tree"
+  [{:keys [left] :as tree}]
+  (let [pivot left, right-pivot (assoc tree :left (:right left))]
+  (-> (assoc tree :root (:root pivot))
+      (assoc :left (:left pivot))
+      (assoc :right right-pivot))))
+
 ;; test case
 (def tree (create-bst '( 9 2 1 5 7 3 4 6 8 10)))
 (prn tree)
@@ -126,4 +142,8 @@
 (is-right-case? (create-bst '(2 6 4 3 1 7)))
 (is-right-left-case? (create-bst '(2 6 4 3 1 7)))
 (is-right-right-case? (create-bst '(3 4 5)))
+
+(rotate-left (create-bst '(3 4 5)))
+(rotate-right (create-bst '(5 4 3)))
+
 
