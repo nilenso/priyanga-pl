@@ -12,22 +12,99 @@
 ;; - The tree must be self balancing
 ;; - Use your tree to find the count of the words in a huge text file
 
-;;             5                          5
-;;            / \                        / \
-;;           3   nil                    3   nil
-;;          /                          / \ 
-;;         2                         nil  4
-;;        /                              / \
-;;       nil                            nil nil
+(defn height
+  "Returns height of the given tree"
+  ([tree] (height tree 0))
+  ([tree count]
+   (if tree
+     (max (height (:left tree) (inc count))
+          (height (:right tree) (inc count)))
+     count)))
 
+(defn factor
+  "Returns the balance factor of root node of the given tree"
+  [{:keys [left right]}]
+  (- (height left) (height right)))
+
+(defn is-left-case?
+  "Returns true if left subtree is imbalanced else false"
+  [tree]
+  (> (factor tree) 1))
+
+(defn is-right-case?
+  "Returns true if right sub tree is imbalanced else false"
+  [tree]
+  (< (factor tree) -1))
+
+(defn is-left-right-case?
+  "Returns true if right sub tree of left child is imbalanced else false"
+  [tree]
+  (and (is-left-case? tree) (< (factor (:left tree)) 0)))
+
+(defn is-left-left-case?
+  "Returns true if left sub tree of left child is imbalanced else false"
+  [tree]
+  (and (is-left-case? tree) (> (factor (:left tree)) 0)))
+
+(defn is-right-right-case?
+  "Returns true if right sub tree of right child is imbalanced else false"
+  [tree]
+  (and (is-right-case? tree) (< (factor (:right tree)) 0)))
+
+(defn is-right-left-case?
+  "Returns true if right sub tree of left child is imbalanced else false"
+  [tree]
+  (and (is-right-case? tree) (> (factor (:right tree)) 0)))
+
+(defn rotate-left
+  "Returns the left rotated tree "
+  [{:keys [root left right]}]
+  (let [pivot (:root right)
+        left-pivot (:left right)
+        right-pivot (:right right)]
+    {:root pivot
+     :left {:root root
+            :left left
+            :right left-pivot}
+     :right right-pivot}))
+
+(defn rotate-right
+  "Returns the right rotated tree"
+  [{:keys [root left right]}]
+  (let [pivot (:root left)
+        left-pivot (:left left)
+        right-pivot (:right left)]
+    {:root pivot
+     :left left-pivot
+     :right {:root root
+             :left right-pivot
+             :right right}}))
+
+(defn balance
+  "Returns a balanced bst"
+  [{:keys [left right] :as tree}]
+  (cond
+    (is-right-left-case? tree) (rotate-left
+                                (assoc tree :right (rotate-right right)))
+
+    (is-left-right-case? tree) (rotate-right
+                                (assoc tree :left (rotate-left left)))
+
+    (is-right-right-case? tree) (rotate-left tree)
+
+    (is-left-left-case? tree) (rotate-right tree)
+
+    :else tree))
 
 (defn insert-node
   "Returns a bst after inserting a new node"
   [{:keys [root] :as tree} value]
   (cond
     (nil? root) {:root value :left nil :right nil}
-    (< value root) (update tree :left insert-node value)
-    (> value root) (update tree :right insert-node value)
+    (< value root) (balance
+                    (update tree :left insert-node value))
+    (> value root) (balance
+                    (update tree :right insert-node value))
     :else tree))
 
 (defn create-bst
@@ -65,85 +142,16 @@
             (-> (update tree :right remove-node min)
                 (assoc :root min)))))
 
-(defn height
-  "Returns height of the given tree"
-  ([tree] (height tree 0))
-  ([tree count]
-   (if tree
-     (max (height (:left tree) (inc count))
-          (height (:right tree) (inc count)))
-     count)))
-
-(defn factor 
-  "Returns the balance factor of root node of the given tree"
-  [{:keys [left right]}]
-  (- (height left) (height right)))
-
-(defn is-left-case? 
-  "Returns true if left subtree is imbalanced else false"
-  [tree]
-  (> (factor tree) 1))
-
-(defn is-right-case? 
-  "Returns true if right sub tree is imbalanced else false"
-  [tree]
-  (< (factor tree) -1))
-
-(defn is-left-right-case?
-  "Returns true if right sub tree of left child is imbalanced else false"
-  [tree]
-  (and (is-left-case? tree) (< (factor (:left tree)) 0)))
-
-(defn is-left-left-case? 
-  "Returns true if left sub tree of left child is imbalanced else false"
-  [tree]
-  (and (is-left-case? tree) (> (factor (:left tree)) 0)))
-
-(defn is-right-right-case? 
-  "Returns true if right sub tree of right child is imbalanced else false"
-  [tree]
-  (and (is-right-case? tree) (< (factor (:right tree)) 0)))
-
-(defn is-right-left-case? 
-  "Returns true if right sub tree of left child is imbalanced else false"
-  [tree]
-  (and (is-right-case? tree) (> (factor (:right tree)) 0)))
-
-(defn rotate-left
-  "Returns the left rotated tree "
-  [{:keys [right] :as tree}]
-  (let [pivot right, left-pivot (assoc tree :right (:left right))]
-    (-> (assoc tree :root (:root pivot))
-        (assoc :left left-pivot)
-        (assoc :right (:right pivot)))))
-
-(defn rotate-right
-  "Returns the right rotated tree"
-  [{:keys [left] :as tree}]
-  (let [pivot left, right-pivot (assoc tree :left (:right left))]
-  (-> (assoc tree :root (:root pivot))
-      (assoc :left (:left pivot))
-      (assoc :right right-pivot))))
-
 ;; test case
-(def tree (create-bst '( 9 2 1 5 7 3 4 6 8 10)))
-(prn tree)
+(def tree (create-bst '(2 1 9 5 7 3 4 6 8 10)))
+(clojure.pprint/pprint tree)
+
+(def tree2 (create-bst '(2 1 9 5 3 7 4 6 8 10)))
+(clojure.pprint/pprint tree2)
+
 (has? tree 0)
 (has? tree 3)
 (min-node tree)
 (remove-node tree 5)
 (height tree)
 (factor tree)
-
-(is-left-case? tree)
-(is-left-right-case? tree)
-(is-left-left-case? (create-bst '(9 7 5 3 4 2 1 6 8 10)))
-
-(is-right-case? (create-bst '(2 6 4 3 1 7)))
-(is-right-left-case? (create-bst '(2 6 4 3 1 7)))
-(is-right-right-case? (create-bst '(3 4 5)))
-
-(rotate-left (create-bst '(3 4 5)))
-(rotate-right (create-bst '(5 4 3)))
-
-
