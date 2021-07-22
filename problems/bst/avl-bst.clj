@@ -12,6 +12,10 @@
 ;; - The tree must be self balancing
 ;; - Use your tree to find the count of the words in a huge text file
 
+(ns user
+  (:require [clojure.string :as string]
+            [clojure.pprint :as pprint]))
+
 (defn height
   "Returns height of the given tree"
   ([tree] (height tree 0))
@@ -101,9 +105,9 @@
   [{:keys [root] :as tree} value]
   (cond
     (nil? root) {:root value :left nil :right nil}
-    (< value root) (balance
+    (neg? (compare value root)) (balance
                     (update tree :left insert-node value))
-    (> value root) (balance
+    (pos? (compare value root)) (balance
                     (update tree :right insert-node value))
     :else tree))
 
@@ -118,7 +122,7 @@
   (cond
     (nil? root) false
     (= value root) true
-    (< value root) (has? left value)
+    (neg? (compare value root)) (has? left value)
     :else (has? right value)))
 
 (defn min-node
@@ -134,24 +138,39 @@
   [{:keys [root left right] :as tree} value]
   (cond
     (nil? tree) nil
-    (< value root) (update tree :left remove-node value)
-    (> value root) (update tree :right remove-node value)
+    (neg? (compare value root)) (update tree :left remove-node value)
+    (pos? (compare value root)) (update tree :right remove-node value)
     (nil? left) right
     (nil? right) left
     :else (let [min (min-node right)]
             (-> (update tree :right remove-node min)
                 (assoc :root min)))))
 
+(defn read-file
+  "Returns a vector containing all the words in a file"
+  [file-path]
+  (let [content (slurp file-path)] 
+    (string/split content #" ")))
+
+(defn count-nodes
+  "Returns the number of nodes in a tree"
+  [{:keys [left right] :as tree}]
+  (if tree
+    (+ 1 (count left) (count right))
+    0))
+
+(def file-path "/Users/priyangapkini/Clojure/Learning/problems/bst/text.txt")
+
 ;; test case
 (def tree (create-bst '(2 1 9 5 7 3 4 6 8 10)))
-(clojure.pprint/pprint tree)
-
-(def tree2 (create-bst '(2 1 9 5 3 7 4 6 8 10)))
-(clojure.pprint/pprint tree2)
-
+(pprint/pprint tree)
 (has? tree 0)
 (has? tree 3)
 (min-node tree)
 (remove-node tree 5)
 (height tree)
 (factor tree)
+
+(def word-tree (create-bst (read-file file-path)))
+(pprint/pprint word-tree)
+(count-nodes word-tree)
